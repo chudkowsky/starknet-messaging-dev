@@ -1,0 +1,20 @@
+include:
+  - compose.l2.yml
+  - compose.l3.yml
+  - compose.e2e.yml
+
+# Cross-compose dependency wiring:
+#   - katana_init waits for L2 setup to complete (not just katana_l2 healthy)
+#   - saya waits for both contract deployments to finish
+services:
+  katana_init:
+    depends_on:
+      core_contract_setup:
+        condition: service_completed_successfully
+
+  saya:
+    depends_on:
+      sn_msg_deploy:
+        condition: service_completed_successfully
+      appc_msg_sn_deploy:
+        condition: service_completed_successfully
